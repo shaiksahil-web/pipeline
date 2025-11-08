@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated Clock</title>
+    <title>Rat Maze Game</title>
     <style>
         * {
             margin: 0;
@@ -12,192 +12,384 @@
         }
 
         body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
         }
 
-        .clock-container {
-            position: relative;
-        }
-
-        .clock {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
+        .game-container {
             background: white;
+            border-radius: 20px;
+            padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: relative;
-            border: 8px solid #333;
+            max-width: 600px;
         }
 
-        .clock::before {
-            content: '';
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: #333;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-
-        .number {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        h1 {
             text-align: center;
-            font-size: 20px;
-            font-weight: bold;
             color: #333;
-        }
-
-        .number span {
-            display: inline-block;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .number:nth-child(1) { transform: rotate(0deg); }
-        .number:nth-child(1) span { transform: translateX(-50%) rotate(0deg); top: 20px; }
-        
-        .number:nth-child(2) { transform: rotate(30deg); }
-        .number:nth-child(2) span { transform: translateX(-50%) rotate(-30deg); top: 20px; }
-        
-        .number:nth-child(3) { transform: rotate(60deg); }
-        .number:nth-child(3) span { transform: translateX(-50%) rotate(-60deg); top: 20px; }
-        
-        .number:nth-child(4) { transform: rotate(90deg); }
-        .number:nth-child(4) span { transform: translateX(-50%) rotate(-90deg); top: 20px; }
-        
-        .number:nth-child(5) { transform: rotate(120deg); }
-        .number:nth-child(5) span { transform: translateX(-50%) rotate(-120deg); top: 20px; }
-        
-        .number:nth-child(6) { transform: rotate(150deg); }
-        .number:nth-child(6) span { transform: translateX(-50%) rotate(-150deg); top: 20px; }
-        
-        .number:nth-child(7) { transform: rotate(180deg); }
-        .number:nth-child(7) span { transform: translateX(-50%) rotate(-180deg); top: 20px; }
-        
-        .number:nth-child(8) { transform: rotate(210deg); }
-        .number:nth-child(8) span { transform: translateX(-50%) rotate(-210deg); top: 20px; }
-        
-        .number:nth-child(9) { transform: rotate(240deg); }
-        .number:nth-child(9) span { transform: translateX(-50%) rotate(-240deg); top: 20px; }
-        
-        .number:nth-child(10) { transform: rotate(270deg); }
-        .number:nth-child(10) span { transform: translateX(-50%) rotate(-270deg); top: 20px; }
-        
-        .number:nth-child(11) { transform: rotate(300deg); }
-        .number:nth-child(11) span { transform: translateX(-50%) rotate(-300deg); top: 20px; }
-        
-        .number:nth-child(12) { transform: rotate(330deg); }
-        .number:nth-child(12) span { transform: translateX(-50%) rotate(-330deg); top: 20px; }
-
-        .hand {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform-origin: bottom center;
-            background: #333;
-            border-radius: 10px;
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-
-        .hour {
-            width: 6px;
-            height: 70px;
-            margin-left: -3px;
-            background: #333;
-        }
-
-        .minute {
-            width: 4px;
-            height: 100px;
-            margin-left: -2px;
-            background: #555;
-        }
-
-        .second {
-            width: 2px;
-            height: 110px;
-            margin-left: -1px;
-            background: #e74c3c;
-        }
-
-        .digital-time {
-            text-align: center;
-            margin-top: 30px;
+            margin-bottom: 10px;
             font-size: 32px;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            font-weight: 300;
-            letter-spacing: 2px;
         }
 
-        .date {
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-item {
             text-align: center;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .maze {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: white;
+            transition: background 0.2s;
+        }
+
+        .wall {
+            background: #333;
+        }
+
+        .rat {
+            background: #ffd43b;
+        }
+
+        .cheese {
+            background: #ffe066;
+        }
+
+        .path {
+            background: #e7f5ff;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 200px;
+            margin: 0 auto 20px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .up { grid-column: 2; }
+        .left { grid-column: 1; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            background: #51cf66;
             margin-top: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #37b24d;
+        }
+
+        .message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 300;
+        }
+
+        .win {
+            background: #d3f9d8;
+            color: #2b8a3e;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
-    <div class="clock-container">
-        <div class="clock">
-            <div class="number"><span>12</span></div>
-            <div class="number"><span>1</span></div>
-            <div class="number"><span>2</span></div>
-            <div class="number"><span>3</span></div>
-            <div class="number"><span>4</span></div>
-            <div class="number"><span>5</span></div>
-            <div class="number"><span>6</span></div>
-            <div class="number"><span>7</span></div>
-            <div class="number"><span>8</span></div>
-            <div class="number"><span>9</span></div>
-            <div class="number"><span>10</span></div>
-            <div class="number"><span>11</span></div>
-            <div class="hand hour" id="hour"></div>
-            <div class="hand minute" id="minute"></div>
-            <div class="hand second" id="second"></div>
+    <div class="game-container">
+        <h1>🐀 Rat Maze Game 🧀</h1>
+        
+        <div class="instructions">
+            Help the rat find the cheese! Use arrow buttons or keyboard arrows to move.
         </div>
-        <div class="digital-time" id="digital"></div>
-        <div class="date" id="date"></div>
+
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">Moves</div>
+                <div class="info-value" id="moves">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Time</div>
+                <div class="info-value" id="time">0s</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Level</div>
+                <div class="info-value" id="level">1</div>
+            </div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="maze" id="maze"></div>
+
+        <div class="controls">
+            <button class="up" onclick="move('up')">↑</button>
+            <button class="left" onclick="move('left')">←</button>
+            <button class="down" onclick="move('down')">↓</button>
+            <button class="right" onclick="move('right')">→</button>
+        </div>
+
+        <button class="reset-btn" onclick="resetGame()">New Game</button>
     </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
+        const mazeElement = document.getElementById('maze');
+        const movesElement = document.getElementById('moves');
+        const timeElement = document.getElementById('time');
+        const levelElement = document.getElementById('level');
+        const messageElement = document.getElementById('message');
 
-            const hourDeg = (hours % 12) * 30 + minutes * 0.5;
-            const minuteDeg = minutes * 6 + seconds * 0.1;
-            const secondDeg = seconds * 6;
+        let currentLevel = 1;
+        let moves = 0;
+        let startTime;
+        let timerInterval;
+        let gameWon = false;
 
-            document.getElementById('hour').style.transform = `rotate(${hourDeg}deg)`;
-            document.getElementById('minute').style.transform = `rotate(${minuteDeg}deg)`;
-            document.getElementById('second').style.transform = `rotate(${secondDeg}deg)`;
+        const levels = [
+            // Level 1 - Easy
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 3, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1]
+            ],
+            // Level 2 - Medium
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 0, 1, 0, 0, 0, 0, 1],
+                [1, 1, 0, 1, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 1],
+                [1, 0, 1, 1, 0, 1, 0, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 3, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ],
+            // Level 3 - Hard
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+                [1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
+                [1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+                [1, 1, 1, 0, 0, 0, 0, 0, 3, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ]
+        ];
 
-            const digitalTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('digital').textContent = digitalTime;
+        let maze = [];
+        let ratPos = { x: 0, y: 0 };
+        let cheesePos = { x: 0, y: 0 };
 
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('en-US', options);
-            document.getElementById('date').textContent = dateString;
+        function initGame() {
+            maze = JSON.parse(JSON.stringify(levels[currentLevel - 1]));
+            moves = 0;
+            gameWon = false;
+            movesElement.textContent = moves;
+            messageElement.innerHTML = '';
+            messageElement.className = '';
+
+            // Find rat and cheese positions
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[y].length; x++) {
+                    if (maze[y][x] === 2) {
+                        ratPos = { x, y };
+                    } else if (maze[y][x] === 3) {
+                        cheesePos = { x, y };
+                    }
+                }
+            }
+
+            renderMaze();
+            startTimer();
         }
 
-        updateClock();
-        setInterval(updateClock, 1000);
+        function renderMaze() {
+            mazeElement.innerHTML = '';
+            mazeElement.style.gridTemplateColumns = `repeat(${maze[0].length}, 40px)`;
+
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[y].length; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    if (maze[y][x] === 1) {
+                        cell.classList.add('wall');
+                    } else if (x === ratPos.x && y === ratPos.y) {
+                        cell.classList.add('rat');
+                        cell.textContent = '🐀';
+                    } else if (x === cheesePos.x && y === cheesePos.y) {
+                        cell.classList.add('cheese');
+                        cell.textContent = '🧀';
+                    } else if (maze[y][x] === 0) {
+                        cell.classList.add('path');
+                    }
+
+                    mazeElement.appendChild(cell);
+                }
+            }
+        }
+
+        function move(direction) {
+            if (gameWon) return;
+
+            let newX = ratPos.x;
+            let newY = ratPos.y;
+
+            switch(direction) {
+                case 'up': newY--; break;
+                case 'down': newY++; break;
+                case 'left': newX--; break;
+                case 'right': newX++; break;
+            }
+
+            // Check if move is valid
+            if (newY >= 0 && newY < maze.length && 
+                newX >= 0 && newX < maze[0].length && 
+                maze[newY][newX] !== 1) {
+                
+                ratPos.x = newX;
+                ratPos.y = newY;
+                moves++;
+                movesElement.textContent = moves;
+
+                // Check if won
+                if (ratPos.x === cheesePos.x && ratPos.y === cheesePos.y) {
+                    winGame();
+                }
+
+                renderMaze();
+            }
+        }
+
+        function winGame() {
+            gameWon = true;
+            clearInterval(timerInterval);
+            
+            messageElement.className = 'message win';
+            messageElement.innerHTML = `🎉 You found the cheese in ${moves} moves and ${timeElement.textContent}!`;
+
+            if (currentLevel < levels.length) {
+                setTimeout(() => {
+                    if (confirm('Level complete! Move to next level?')) {
+                        currentLevel++;
+                        levelElement.textContent = currentLevel;
+                        initGame();
+                    }
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    alert('🏆 Congratulations! You completed all levels!');
+                }, 1000);
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                timeElement.textContent = elapsed + 's';
+            }, 1000);
+        }
+
+        function resetGame() {
+            currentLevel = 1;
+            levelElement.textContent = currentLevel;
+            clearInterval(timerInterval);
+            timeElement.textContent = '0s';
+            initGame();
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': move('up'); break;
+                case 'ArrowDown': move('down'); break;
+                case 'ArrowLeft': move('left'); break;
+                case 'ArrowRight': move('right'); break;
+            }
+        });
+
+        // Start game
+        initGame();
     </script>
 </body>
 </html>
