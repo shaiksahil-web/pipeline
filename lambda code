@@ -1,0 +1,35 @@
+import json
+import boto3
+
+# Initialize SNS client
+sns = boto3.client('sns')
+
+# Your SNS Topic ARN
+SNS_TOPIC_ARN = "#_YOUR_TOPIC_ARN_#"
+
+def lambda_handler(event, context):
+    # Optional: Print event for debugging
+    print("Received event:", json.dumps(event))
+
+    # Message content you want to send
+    message = "✅ A new Docker image has been pushed successfully!"
+
+    try:
+        # Publish message to SNS topic
+        sns.publish(
+            TopicArn=SNS_TOPIC_ARN,
+            Message=message,
+            Subject="Docker Image Push Notification"
+        )
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps("SNS Notification Sent Successfully!")
+        }
+
+    except Exception as e:
+        print("Error:", str(e))
+        return {
+            "statusCode": 500,
+            "body": json.dumps("Failed to send notification")
+        }
